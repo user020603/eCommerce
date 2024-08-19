@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -62,7 +63,7 @@ public class ProductController {
     }
 
     private String storeFile(MultipartFile file) throws IOException {
-        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String uniqueFilename = UUID.randomUUID().toString() + "_" + filename;
         Path uploadDir = Paths.get("uploads");
         if (!Files.exists(uploadDir)) {

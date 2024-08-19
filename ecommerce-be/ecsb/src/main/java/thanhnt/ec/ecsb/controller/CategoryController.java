@@ -36,7 +36,7 @@ public class CategoryController {
             }
             return ResponseEntity.ok("Category created successfully " + categoryDTO.getName());
         } catch(Exception e) {
-            return  ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
