@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/categories")
+@RequestMapping("${api.prefix}/categories")
 //@Validated
 public class CategoryController {
     @GetMapping("") // http://localhost:8088/api/v1/categories?page=1&limit=10

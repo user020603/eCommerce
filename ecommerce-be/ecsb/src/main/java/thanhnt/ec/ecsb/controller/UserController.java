@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("${api.prefix}/users")
 public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO, BindingResult result) {
