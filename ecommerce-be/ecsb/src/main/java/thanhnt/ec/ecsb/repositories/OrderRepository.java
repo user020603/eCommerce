@@ -6,5 +6,5 @@ import thanhnt.ec.ecsb.model.Order;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByUserOd(Long userId);
+    List<Order> findByUserId(Long userId);
 }

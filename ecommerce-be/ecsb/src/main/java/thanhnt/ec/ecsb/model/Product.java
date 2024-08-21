@@ -1,10 +1,7 @@
 package thanhnt.ec.ecsb.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "products")
@@ -12,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Product extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +27,6 @@ public class Product extends BaseModel {
     private String description;
 
     @ManyToOne
-    @Column(name = "category_id")
-    private Long categoryId;
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
