@@ -5,11 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import thanhnt.ec.ecsb.dto.CategoryDTO;
 import thanhnt.ec.ecsb.model.Category;
-import thanhnt.ec.ecsb.services.CategoryService;
+import thanhnt.ec.ecsb.services.ICategoryService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 // Dependency Injection
 @RequiredArgsConstructor
 public class CategoryController {
-    private final CategoryService categoryService;
+    private final ICategoryService categoryService;
 
     @PostMapping("")
     public ResponseEntity<?> createCategory(

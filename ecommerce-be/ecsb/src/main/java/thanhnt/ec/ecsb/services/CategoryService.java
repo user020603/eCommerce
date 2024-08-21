@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryService implements iCategoryService{
+public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
     @Override
     public void createCategory(CategoryDTO categoryDTO) {

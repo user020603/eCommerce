@@ -5,7 +5,7 @@ import thanhnt.ec.ecsb.model.Category;
 
 import java.util.List;
 
-public interface iCategoryService {
+public interface ICategoryService {
     void createCategory(CategoryDTO category);
     Category getCategoryById(Long id);
     List<Category> getAllCategories();
