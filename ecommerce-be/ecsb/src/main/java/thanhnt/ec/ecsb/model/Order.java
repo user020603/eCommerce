@@ -4,7 +4,7 @@ package thanhnt.ec.ecsb.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Order extends BaseModel {
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +23,7 @@ public class Order extends BaseModel {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "fullname", length = 100)
+    @Column(name = "full_name", length = 100)
     private String fullName;
 
     @Column(name = "email", length = 100)
@@ -39,13 +39,13 @@ public class Order extends BaseModel {
     private String note;
 
     @Column(name = "order_date")
-    private LocalDateTime orderDate;
+    private Date orderDate;
 
     @Column(name = "status")
     private String status;
 
-    @Column(name = "total_money")
-    private Integer totalMoney;
+    @Column(name = "total_price")
+    private Float totalPrice;
 
     @Column(name = "shipping_method")
     private String shippingMethod;
@@ -54,7 +54,7 @@ public class Order extends BaseModel {
     private String shippingAddress;
 
     @Column(name = "shipping_date")
-    private Date shippingDate;
+    private LocalDate shippingDate;
 
     @Column(name = "tracking_number")
     private String trackingNumber;

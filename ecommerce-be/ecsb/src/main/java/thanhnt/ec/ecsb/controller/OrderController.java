@@ -1,18 +1,25 @@
 package thanhnt.ec.ecsb.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import thanhnt.ec.ecsb.dto.OrderDTO;
+import thanhnt.ec.ecsb.model.Order;
+import thanhnt.ec.ecsb.services.IOrderService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.prefix}/orders")
+@RequiredArgsConstructor
 public class OrderController {
+    private final IOrderService orderService;
+
     @PostMapping("")
     public ResponseEntity<?> createOrder(@RequestBody @Valid OrderDTO orderDTO, BindingResult result) {
         try {
@@ -22,7 +29,8 @@ public class OrderController {
                         .collect(Collectors.toList());
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            return ResponseEntity.ok("createOrder successfully");
+            Order newOrder = orderService.createOrder(orderDTO);
+            return ResponseEntity.ok(newOrder);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
