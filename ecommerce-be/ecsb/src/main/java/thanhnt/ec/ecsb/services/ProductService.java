@@ -14,6 +14,7 @@ import thanhnt.ec.ecsb.model.ProductImage;
 import thanhnt.ec.ecsb.repositories.CategoryRepository;
 import thanhnt.ec.ecsb.repositories.ProductImageRepository;
 import thanhnt.ec.ecsb.repositories.ProductRepository;
+import thanhnt.ec.ecsb.response.ProductResponse;
 
 import java.util.Optional;
 
@@ -52,8 +53,19 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Page<Product> getAllProducts(PageRequest pageRequest) {
-        return productRepository.findAll(pageRequest);
+    public Page<ProductResponse> getAllProducts(PageRequest pageRequest) {
+        return productRepository.findAll(pageRequest).map(product -> {
+            ProductResponse productResponse = ProductResponse.builder()
+                    .name(product.getName())
+                    .price(product.getPrice())
+                    .thumbnail(product.getThumbnail())
+                    .description(product.getDescription())
+                    .categoryId(product.getCategory().getId())
+                    .build();
+            productResponse.setCreatedAt(product.getCreatedAt());
+            productResponse.setUpdatedAt(product.getUpdatedAt());
+            return productResponse;
+        });
     }
 
     @Override
@@ -104,8 +116,11 @@ public class ProductService implements IProductService {
 
         // No insert over 5 images for 1 product
         int size = productImageRepository.findByProductId(productId).size();
-        if (size >= 5) {
-            throw new InvalidParamException("Number of images must be <= 5");
+        if (size >= ProductImage.MAXIMUM_IMG_UPLOAD) {
+            throw new InvalidParamException(
+                    "Number of images must be <= " +
+                    ProductImage.MAXIMUM_IMG_UPLOAD
+            );
         }
         return productImageRepository.save(newProductImage);
     }
