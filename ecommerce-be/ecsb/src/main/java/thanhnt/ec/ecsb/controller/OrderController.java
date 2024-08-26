@@ -2,7 +2,6 @@ package thanhnt.ec.ecsb.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -36,11 +35,22 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/{user_id}")
-    // GET http://localhost:8088/api/v1/orders/4
+    @GetMapping("/user/{user_id}")
+    // GET http://localhost:8088/api/v1/orders/user/4
     public ResponseEntity<?> getOrders(@Valid @PathVariable("user_id") Long userId) {
         try {
-            return ResponseEntity.ok("Get orders from user id " + userId);
+            List<Order> orders = orderService.findByUserId(userId);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrder(@Valid @PathVariable("id") Long orderId) {
+        try {
+            Order detailOrder = orderService.getOrder(orderId);
+            return ResponseEntity.ok(detailOrder);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -53,12 +63,18 @@ public class OrderController {
             @Valid @PathVariable Long id,
             @Valid @RequestBody OrderDTO orderDTO
     ) {
-        return ResponseEntity.ok("Update an order info");
+        try {
+            Order order = orderService.updateOrder(id, orderDTO);
+            return ResponseEntity.ok(order);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@Valid @PathVariable Long id) {
-        // soft delete => update "active" field = false
+        // soft-delete => update "active" field = false
+        orderService.deleteOrder(id);
         return ResponseEntity.ok("Order deleted successfully");
     }
 }
