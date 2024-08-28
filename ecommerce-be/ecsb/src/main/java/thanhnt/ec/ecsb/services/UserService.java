@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import thanhnt.ec.ecsb.components.JwtTokenUtil;
 import thanhnt.ec.ecsb.dto.UserDTO;
 import thanhnt.ec.ecsb.exceptions.DataNotFoundException;
+import thanhnt.ec.ecsb.exceptions.PermissionDenyException;
 import thanhnt.ec.ecsb.model.Role;
 import thanhnt.ec.ecsb.model.User;
 import thanhnt.ec.ecsb.repositories.RoleRepository;
@@ -27,12 +28,18 @@ public class UserService implements IUserService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public User createUser(UserDTO userDTO) throws DataNotFoundException {
+    public User createUser(UserDTO userDTO) throws Exception {
         String phoneNumber = userDTO.getPhoneNumber();
 
         // check phone number is existed or not
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
             throw new DataIntegrityViolationException("Phone number already existed");
+        }
+
+        Role role = roleRepository.findById(userDTO.getRoleId())
+                .orElseThrow(() -> new DataNotFoundException("Role not found"));
+        if (role.getName().toUpperCase().equals(Role.ADMIN)) {
+            throw new PermissionDenyException("You cannot register an admin account");
         }
 
         // Convert from userDTO => user
@@ -46,8 +53,6 @@ public class UserService implements IUserService {
                 .facebookAccountId(userDTO.getFacebookAccountId())
                 .googleAccountId(userDTO.getGoogleAccountId())
                 .build();
-        Role role = roleRepository.findById(userDTO.getRoleId())
-                .orElseThrow(() -> new DataNotFoundException("Role not found"));
         newUser.setRole(role);
 
         // check if login by accountId, no require password
