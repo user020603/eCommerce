@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
+    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) throws Exception {
         // check login info & generate token
         String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
         // return token in response

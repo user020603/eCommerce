@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import thanhnt.ec.ecsb.dto.OrderDetailDTO;
-import thanhnt.ec.ecsb.exceptions.DataNotFoundException;
 import thanhnt.ec.ecsb.model.OrderDetail;
 import thanhnt.ec.ecsb.response.OrderDetailResponse;
 import thanhnt.ec.ecsb.services.OrderDetailService;
