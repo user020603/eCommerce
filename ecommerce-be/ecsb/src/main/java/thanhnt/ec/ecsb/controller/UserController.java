@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import thanhnt.ec.ecsb.dto.*;
+import thanhnt.ec.ecsb.model.User;
 import thanhnt.ec.ecsb.services.IUserService;
 
 import java.util.List;
@@ -34,18 +35,22 @@ public class UserController {
             if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
                 return ResponseEntity.badRequest().body("Password does not match");
             }
-            userService.createUser(userDTO);
-            return ResponseEntity.ok("Register successfully");
+            User registedUser = userService.createUser(userDTO);
+            return ResponseEntity.ok(registedUser);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) throws Exception {
+    public ResponseEntity<String> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         // check login info & generate token
-        String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
-        // return token in response
-        return ResponseEntity.ok(token);
+        try {
+            // return token in response
+            String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
+            return ResponseEntity.ok(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

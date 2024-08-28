@@ -2,21 +2,7 @@ CREATE DATABASE shopapp;
 USE shopapp; 
 
 -- When user want to buy products => have to regist an account => user table
-CREATE TABLE users(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    full_name VARCHAR(100) DEFAULT "",
-    phone_number VARCHAR(100) NOT NULL,
-    address VARCHAR(200) DEFAULT "",
-    password VARCHAR(100) NOT NULL DEFAULT "", -- encrypted password
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,  
-    is_active TINYINT(1) DEFAULT 1,
-    date_of_birth DATE,
-    facebook_account_id INT DEFAULT 0,
-    google_account_id INT DEFAULT 0,
-    role_id INT,
-    FOREIGN KEY (role_id) REFERENCES roles(id)
-);
+ALTER TABLE users AUTO_INCREMENT = 1;
 
 -- Role of user
 CREATE TABLE roles(

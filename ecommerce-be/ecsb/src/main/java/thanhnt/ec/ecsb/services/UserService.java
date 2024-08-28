@@ -27,7 +27,7 @@ public class UserService implements IUserService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public void createUser(UserDTO userDTO) throws DataNotFoundException {
+    public User createUser(UserDTO userDTO) throws DataNotFoundException {
         String phoneNumber = userDTO.getPhoneNumber();
 
         // check phone number is existed or not
@@ -42,6 +42,7 @@ public class UserService implements IUserService {
                 .password(userDTO.getPassword())
                 .address(userDTO.getAddress())
                 .dateOfBirth(userDTO.getDateOfBirth())
+                .active(true)
                 .facebookAccountId(userDTO.getFacebookAccountId())
                 .googleAccountId(userDTO.getGoogleAccountId())
                 .build();
@@ -55,7 +56,7 @@ public class UserService implements IUserService {
             String encodedPassword = passwordEncoder.encode(password);
             newUser.setPassword(encodedPassword);
         }
-        userRepository.save(newUser);
+        return userRepository.save(newUser);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class UserService implements IUserService {
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                phoneNumber, password
+                phoneNumber, password, existingUser.getAuthorities()
         );
 
         authenticationManager.authenticate(authenticationToken);

@@ -26,4 +26,4 @@ api:
 
 jwt:
   expiration: 2592000 # 30 days = 30 * 24 * 60 * 60
-  secretKey: random key dream lol
+  secretKey: TgRB1C2JHBZzC7zebA9uSXR3kYoQXUo0yMYINMAHDxI=
