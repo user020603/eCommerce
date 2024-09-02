@@ -11,6 +11,7 @@ import { LoginComponent } from './login/login.component';
 import { OrderConfirmComponent } from './order-confirm/order-confirm.component';
 import { RegisterComponent } from './register/register.component';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,7 @@ import { FormsModule } from '@angular/forms';
     OrderConfirmComponent,
     RegisterComponent,
   ],
-  imports: [BrowserModule, FormsModule],
+  imports: [BrowserModule, FormsModule, HttpClientModule],
   providers: [],
   bootstrap: [
     // HomeComponent,

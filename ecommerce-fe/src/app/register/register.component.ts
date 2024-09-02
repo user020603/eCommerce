@@ -1,14 +1,16 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
-  @ViewChild("registerForm") registerForm!: NgForm;
-  phone: string;
+  @ViewChild('registerForm') registerForm!: NgForm;
+  phoneNumber: string;
   password: string;
   retypePassword: string;
   fullName: string;
@@ -16,8 +18,8 @@ export class RegisterComponent {
   isAccepted: boolean;
   dateOfBirth: Date;
 
-  constructor() {
-    this.phone = '';
+  constructor(private http: HttpClient, private router: Router) {
+    this.phoneNumber = '';
     this.password = '';
     this.retypePassword = '';
     this.fullName = '';
@@ -27,19 +29,46 @@ export class RegisterComponent {
     this.dateOfBirth.setFullYear(this.dateOfBirth.getFullYear() - 18);
   }
 
-  onPhoneChange() {
-    console.log('phone:', this.phone);
+  onPhoneNumberChange() {
+    console.log('phone:', this.phoneNumber);
   }
 
   register() {
-    alert('Register success!');
+    const apiUrl = 'http://localhost:8088/api/v1/users/register';
+    const registerData = {
+      "full_name": this.fullName,
+      "phone_number": this.phoneNumber,
+      "address": this.address,
+      "password": this.password,
+      "retype_password": this.retypePassword,
+      "date_of_birth": this.dateOfBirth,
+      "facebook_account_id": 0,
+      "google_account_id": 0,
+      "role_id": 2,
+    }
+    
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    this.http.post(apiUrl, registerData, { headers }).subscribe({
+      next: (data: any) => {
+        alert('Register success:' + data.data);
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        alert("Register failed: " + error.error);
+      },
+    });
   }
 
   checkPasswordsMatch() {
     if (this.password !== this.retypePassword) {
-      this.registerForm.controls['retypePassword'].setErrors({ passwordMismatch: true });
+      this.registerForm.form.controls['retypePassword'].setErrors({
+        passwordMismatch: true,
+      });
     } else {
-      this.registerForm.controls['retypePassword'].setErrors(null);
+      this.registerForm.form.controls['retypePassword'].setErrors(null);
     }
   }
 
@@ -49,14 +78,19 @@ export class RegisterComponent {
       const birthDate = new Date(this.dateOfBirth);
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
         age--;
       }
 
       if (age < 18) {
-        this.registerForm.form.controls['dateOfBirth'].setErrors({ invalidAge: true });
+        this.registerForm.controls['dateOfBirth'].setErrors({
+          invalidAge: true,
+        });
       } else {
-        this.registerForm.form.controls['dateOfBirth'].setErrors(null);
+        this.registerForm.controls['dateOfBirth'].setErrors(null);
       }
     }
   }
