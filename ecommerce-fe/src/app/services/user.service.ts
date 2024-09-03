@@ -20,6 +20,7 @@ export class UserService {
   private createHeaders() {
     return {
       'Content-Type': 'application/json',
+      "Accept-Language": "en",
     };
   }
 
