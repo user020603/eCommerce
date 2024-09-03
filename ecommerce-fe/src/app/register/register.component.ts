@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UserService } from '../services/user.service';
+import { RegisterDTO } from '../dtos/user/register.dto';
 
 @Component({
   selector: 'app-register',
@@ -18,7 +19,7 @@ export class RegisterComponent {
   isAccepted: boolean;
   dateOfBirth: Date;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private router: Router, private userService: UserService) {
     this.phoneNumber = '';
     this.password = '';
     this.retypePassword = '';
@@ -34,30 +35,25 @@ export class RegisterComponent {
   }
 
   register() {
-    const apiUrl = 'http://localhost:8088/api/v1/users/register';
-    const registerData = {
-      "full_name": this.fullName,
-      "phone_number": this.phoneNumber,
-      "address": this.address,
-      "password": this.password,
-      "retype_password": this.retypePassword,
-      "date_of_birth": this.dateOfBirth,
-      "facebook_account_id": 0,
-      "google_account_id": 0,
-      "role_id": 2,
-    }
-    
-    const headers = {
-      'Content-Type': 'application/json',
+    const registerDTO: RegisterDTO = {
+      full_name: this.fullName,
+      phone_number: this.phoneNumber,
+      address: this.address,
+      password: this.password,
+      retype_password: this.retypePassword,
+      date_of_birth: this.dateOfBirth,
+      facebook_account_id: 0,
+      google_account_id: 0,
+      role_id: 2,
     };
 
-    this.http.post(apiUrl, registerData, { headers }).subscribe({
+    this.userService.register(registerDTO).subscribe({
       next: (data: any) => {
         alert('Register success:' + data.data);
         this.router.navigate(['/login']);
       },
       error: (error) => {
-        alert("Register failed: " + error.error);
+        alert('Register failed: ' + error.error);
       },
     });
   }
