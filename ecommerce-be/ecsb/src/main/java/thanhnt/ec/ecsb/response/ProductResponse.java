@@ -3,6 +3,10 @@ package thanhnt.ec.ecsb.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import thanhnt.ec.ecsb.model.Product;
+import thanhnt.ec.ecsb.model.ProductImage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -10,6 +14,8 @@ import thanhnt.ec.ecsb.model.Product;
 @NoArgsConstructor
 @Builder
 public class ProductResponse extends BaseResponse {
+    private Long id;
+
     private String name;
 
     private Float price;
@@ -21,13 +27,18 @@ public class ProductResponse extends BaseResponse {
     @JsonProperty("category_id")
     private Long categoryId;
 
+    @JsonProperty("product_images")
+    private List<ProductImage> productImages = new ArrayList<>();
+
     public static ProductResponse fromProduct(Product product) {
         ProductResponse productResponse = ProductResponse.builder()
+                .id(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
                 .thumbnail(product.getThumbnail())
                 .description(product.getDescription())
                 .categoryId(product.getCategory().getId())
+                .productImages(product.getProductImages())
                 .build();
         productResponse.setCreatedAt(product.getCreatedAt());
         productResponse.setUpdatedAt(product.getUpdatedAt());

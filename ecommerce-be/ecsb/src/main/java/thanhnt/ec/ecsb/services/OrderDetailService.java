@@ -1,5 +1,6 @@
 package thanhnt.ec.ecsb.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import thanhnt.ec.ecsb.dto.OrderDetailDTO;
@@ -21,6 +22,7 @@ public class OrderDetailService implements IOrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
 
     @Override
+    @Transactional
     public OrderDetail createOrderDetail(OrderDetailDTO orderDetailDTO) throws Exception {
         Order order = orderRepository.findById(orderDetailDTO.getOrderId()).orElseThrow(
                 () -> new DataNotFoundException("Cannot find Order with id: " + orderDetailDTO.getOrderId())
@@ -50,6 +52,7 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional
     public OrderDetail updateOrderDetail(Long id, OrderDetailDTO orderDetailDTO) throws DataNotFoundException {
          OrderDetail existingOrderDetail = orderDetailRepository.findById(id).orElseThrow(
                  () -> new DataNotFoundException("Cannot find order detail with id: " + id)
@@ -74,6 +77,7 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         orderDetailRepository.deleteById(id);
     }

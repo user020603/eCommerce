@@ -6,7 +6,7 @@ import { UserService } from '../../services/user.service';
 import { LoginDTO } from '../../dtos/user/login.dto';
 import { LoginResponse } from '../../responses/user/login.response';
 import { TokenService } from '../../services/token.service';
-import { Role } from '../../models/role.model';
+import { Role } from '../../models/role';
 import { RoleService } from '../../services/role.service';
 
 @Component({

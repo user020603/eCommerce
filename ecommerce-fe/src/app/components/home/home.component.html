@@ -1,185 +1,72 @@
 <app-header></app-header>
 <div class="container">
   <div class="intro-section">
-    <h1>Welcome to our Home Page</h1>
-    <p>This site displays all the products with its images</p>
+    <h1>This is the Home page</h1>
+    <p>This page displays a list of products with images</p>
+    <p>You can view and purchase products here</p>
   </div>
   <div class="search-box">
     <input
       type="text"
       class="form-control search-input"
-      placeholder="Search product ..."
+      placeholder="Search products"
+      [(ngModel)]="keyword"
     />
-    <select class="form-control product-category">
-      <option selected disabled>Product Categories</option>
-      <option>Electronics</option>
-      <option>Books</option>
-      <option>Foods</option>
+    <select
+      class="form-control product-category"
+      [(ngModel)]="selectedCategoryId"
+    >
+      <option [value]="0">All</option>
+      <option *ngFor="let category of categories" [value]="category.id">
+        {{ category.name }}
+      </option>
     </select>
+    <button class="btn btn-primary ml-2" (click)="searchProducts()">
+      Search
+    </button>
   </div>
   <div class="row">
-    <div class="col-lg-4 col-md-6">
-      <div class="product-item">
-        <img
-          src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt="Product Image"
-          class="product-image"
-        />
-        <h3 class="product-name">Product 1</h3>
-        <p class="product-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>
-        <p class="product-warranty">Warranty: 12 months</p>
-        <p class="product-price">Price: <del>$200</del> $100</p>
-        <div class="product-rating">
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star-half-alt"></i>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-primary">Add product to cart</button>
-          <span class="space-x"></span>
-          <button class="btn btn-success">Buy now</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-      <div class="product-item">
-        <img
-          src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt="Product Image"
-          class="product-image"
-        />
-        <h3 class="product-name">Product 1</h3>
-        <p class="product-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>
-        <p class="product-warranty">Warranty: 12 months</p>
-        <p class="product-price">Price: <del>$200</del> $100</p>
-        <div class="product-rating">
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star-half-alt"></i>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-primary">Add product to cart</button>
-          <span class="space-x"></span>
-          <button class="btn btn-success">Buy now</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-      <div class="product-item">
-        <img
-          src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt="Product Image"
-          class="product-image"
-        />
-        <h3 class="product-name">Product 1</h3>
-        <p class="product-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>
-        <p class="product-warranty">Warranty: 12 months</p>
-        <p class="product-price">Price: <del>$200</del> $100</p>
-        <div class="product-rating">
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star-half-alt"></i>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-primary">Add product to cart</button>
-          <span class="space-x"></span>
-          <button class="btn btn-success">Buy now</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-      <div class="product-item">
-        <img
-          src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt="Product Image"
-          class="product-image"
-        />
-        <h3 class="product-name">Product 1</h3>
-        <p class="product-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>
-        <p class="product-warranty">Warranty: 12 months</p>
-        <p class="product-price">Price: <del>$200</del> $100</p>
-        <div class="product-rating">
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star-half-alt"></i>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-primary">Add product to cart</button>
-          <span class="space-x"></span>
-          <button class="btn btn-success">Buy now</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-      <div class="product-item">
-        <img
-          src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt="Product Image"
-          class="product-image"
-        />
-        <h3 class="product-name">Product 1</h3>
-        <p class="product-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>
-        <p class="product-warranty">Warranty: 12 months</p>
-        <p class="product-price">Price: <del>$200</del> $100</p>
-        <div class="product-rating">
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star-half-alt"></i>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-primary">Add product to cart</button>
-          <span class="space-x"></span>
-          <button class="btn btn-success">Buy now</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-      <div class="product-item">
-        <img
-          src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          alt="Product Image"
-          class="product-image"
-        />
-        <h3 class="product-name">Product 1</h3>
-        <p class="product-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        </p>
-        <p class="product-warranty">Warranty: 12 months</p>
-        <p class="product-price">Price: <del>$200</del> $100</p>
-        <div class="product-rating">
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star"></i>
-          <i class="fas fa-star-half-alt"></i>
-        </div>
-        <div class="product-actions">
-          <button class="btn btn-primary">Add product to cart</button>
-          <span class="space-x"></span>
-          <button class="btn btn-success">Buy now</button>
-        </div>
+    <div class="col-lg-4 col-md-6" *ngFor="let product of products">
+      <div class="product-item" (click)="onProductClick(product.id)">
+        <img [src]="product.url" alt="Product Image" class="product-image" />
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-description">{{ product.description }}</p>
+        <p class="product-price">Price: ${{ product.price }}</p>
       </div>
     </div>
   </div>
 </div>
+
+<div class="d-flex justify-content-center">
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+      <li class="page-item" *ngIf="currentPage > 1">
+        <a class="page-link" href="#" (click)="onPageChange(1)">First</a>
+      </li>
+      <li class="page-item" *ngIf="currentPage > 1">
+        <a class="page-link" href="#" (click)="onPageChange(currentPage - 1)"
+          >Previous</a
+        >
+      </li>
+      <ng-container *ngFor="let page of visiblePages">
+        <li class="page-item" [ngClass]="{ active: page === currentPage }">
+          <a class="page-link" href="#" (click)="onPageChange(page)">{{
+            page
+          }}</a>
+        </li>
+      </ng-container>
+      <li class="page-item" *ngIf="currentPage < totalPages">
+        <a class="page-link" href="#" (click)="onPageChange(currentPage + 1)"
+          >Next</a
+        >
+      </li>
+      <li class="page-item" *ngIf="currentPage < totalPages">
+        <a class="page-link" href="#" (click)="onPageChange(totalPages)"
+          >Last</a
+        >
+      </li>
+    </ul>
+  </nav>
+</div>
+
 <app-footer></app-footer>

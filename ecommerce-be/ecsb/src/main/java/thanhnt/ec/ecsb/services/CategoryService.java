@@ -1,5 +1,6 @@
 package thanhnt.ec.ecsb.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import thanhnt.ec.ecsb.dto.CategoryDTO;
@@ -13,6 +14,7 @@ import java.util.List;
 public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
     @Override
+    @Transactional
     public void createCategory(CategoryDTO categoryDTO) {
         Category newCategory = Category.builder().name(categoryDTO.getName()).build();
         categoryRepository.save(newCategory);
@@ -30,6 +32,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public void updateCategory(Long categoryId, CategoryDTO categoryDTO) {
         Category existingCategory = getCategoryById(categoryId);
         existingCategory.setName(categoryDTO.getName());
@@ -37,6 +40,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long id) {
         // solid remove
         categoryRepository.deleteById(id);

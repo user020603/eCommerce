@@ -1,5 +1,6 @@
 package thanhnt.ec.ecsb.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import thanhnt.ec.ecsb.repositories.ProductImageRepository;
 import thanhnt.ec.ecsb.repositories.ProductRepository;
 import thanhnt.ec.ecsb.response.ProductResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,6 +28,7 @@ public class ProductService implements IProductService {
     private final ProductImageRepository productImageRepository;
 
     @Override
+    @Transactional
     public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
         Category existingCategory = categoryRepository.
                 findById(productDTO.getCategoryId()).
@@ -45,19 +48,28 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product getProductById(Long productId) throws Exception {
-        return productRepository.findById(productId).
-                orElseThrow(() -> new DataNotFoundException(
-                "Cannot find product with id = " + productId
-        ));
+    public Product getProductById(Long id) throws Exception {
+        Optional<Product> optionalProduct = productRepository.getDetailProduct(id);
+        if(optionalProduct.isPresent()) {
+            return optionalProduct.get();
+        }
+        throw new DataNotFoundException("Cannot find product with id =" + id);
     }
 
     @Override
-    public Page<ProductResponse> getAllProducts(PageRequest pageRequest) {
-        return productRepository.findAll(pageRequest).map(ProductResponse::fromProduct);
+    public List<Product> findProductsByIds(List<Long> productIds) {
+        return productRepository.findProductsByIds(productIds);
     }
 
     @Override
+    public Page<ProductResponse> getAllProducts(String keyword, Long categoryId, PageRequest pageRequest) {
+        Page<Product> productsPage;
+        productsPage = productRepository.searchProducts(keyword, categoryId, pageRequest);
+        return productsPage.map(ProductResponse::fromProduct);
+    }
+
+    @Override
+    @Transactional
     public void updateProduct(Long id, ProductDTO productDTO) throws Exception {
         Product existingProduct = getProductById(id);
         if (existingProduct != null) {
@@ -77,6 +89,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(Long productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
         optionalProduct.ifPresent(productRepository::delete);
