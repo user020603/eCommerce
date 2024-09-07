@@ -17,7 +17,6 @@ export class CartService {
   }
 
   addToCart(productId: number, quantity: number = 1): void {
-    debugger
     if (this.cart.has(productId)) {
       // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng lên `quantity`
       this.cart.set(productId, this.cart.get(productId)! + quantity);
@@ -34,7 +33,6 @@ export class CartService {
   }
   // Lưu trữ giỏ hàng vào localStorage
   private saveCartToLocalStorage(): void {
-    debugger
     localStorage.setItem('cart', JSON.stringify(Array.from(this.cart.entries())));
   }  
   // Hàm xóa dữ liệu giỏ hàng và cập nhật Local Storage

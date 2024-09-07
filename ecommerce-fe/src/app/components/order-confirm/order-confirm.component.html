@@ -15,50 +15,35 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <div class="product-info">
-                            <img 
-                            src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                            alt="Product Image" class="product-image">
-                            <span class="product-name">iPhone 13</span>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>100,000 VND</td>
-                    <td>200,000 VND</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="product-info">
-                            <img 
-                            src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                            alt="Product Image" class="product-image">
-                            <span class="product-name">MacBook Pro M2 2023</span>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>100,000 VND</td>
-                    <td>200,000 VND</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="product-info">
-                            <img 
-                            src="https://images.pexels.com/photos/389819/pexels-photo-389819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                            alt="Product Image" class="product-image">
-                            <span class="product-name">Apple Vision Pro 2023</span>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>100,000 VND</td>
-                    <td>200,000 VND</td>
-                </tr>
+                <ng-container *ngFor="let item of cartItems">
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                <img [src]="item.product.thumbnail" alt="Product Image" class="product-image">
+                                <span class="product-name">{{ item.product.name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.product.price | currency:'USD':'symbol':'1.0-0' }}</td>
+                        <td>{{ (item.product.price * item.quantity) | currency:'USD':'symbol':'1.0-0' }}</td>
+                    </tr>
+                </ng-container>
             </tbody>
-        </table>   
-        <div class="text-center mt-3">
-           <button class="btn btn-gradient" type="button">Continue Shopping</button>
-        </div> 
+        </table>           
     </div>    
+    <!-- Coupon code input -->
+    <div class="input-group mb-3 mt-3 col-6">
+        <input type="text" class="form-control" 
+            [(ngModel)]="couponCode" placeholder="Coupon Code">
+        <div class="input-group-append" style="margin-left: 10px;">
+            <button class="btn btn-outline-secondary" type="button" (click)="applyCoupon()">Apply Code</button>
+        </div>
+    </div>
+
+    <!-- Display total amount after applying discount -->
+    <p class="mb-0">Total Amount: {{ totalAmount | currency:'USD':'symbol':'1.0-0' }}</p>
+    <div class="text-center mt-3">
+        <button class="btn btn-gradient" type="button">Place Order</button>
+    </div> 
 </div>
 <app-footer></app-footer>

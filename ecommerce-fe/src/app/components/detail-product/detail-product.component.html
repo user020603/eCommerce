@@ -1,8 +1,8 @@
 <app-header></app-header>
 <div class="container" *ngIf="product">
     <div class="intro-section">
-        <h1>Đây là trang chi tiết sản phẩm</h1>
-        <p>Sử dụng Bootstrap</p>
+        <h1>This is the product detail page</h1>
+        <p>Using Bootstrap</p>
     </div>    
     <div class="row">
       <div class="col-md-6">
@@ -41,10 +41,10 @@
         <div class="product-details">
           <h2>{{ product.name }}</h2>
           <p>{{ product.description }}</p>
-          <p>Giá: ${{ product.price }}</p>
+          <p>Price: ${{ product.price }}</p>
           <div class="product-actions">
-            <button class="btn btn-primary" (click)="addToCart()">Thêm vào giỏ hàng</button>
-            <button class="btn btn-success" (click)="buyNow()">Mua ngay</button>
+            <button class="btn btn-primary" (click)="addToCart()">Add to Cart</button>
+            <button class="btn btn-success" (click)="buyNow()">Buy Now</button>
           </div>
           <div class="product-quantity">
             <div class="border-wrapper">

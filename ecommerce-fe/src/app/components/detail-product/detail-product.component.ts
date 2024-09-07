@@ -26,7 +26,7 @@ export class DetailProductComponent implements OnInit {
   ) {}
   ngOnInit() {
     // const idParam = this.activatedRoute.snapshot.paramMap.get('id');
-    const idParam = 1;
+    const idParam = 7;
     if (idParam !== null) {
       this.productId = +idParam;
     }
@@ -38,7 +38,6 @@ export class DetailProductComponent implements OnInit {
               product_image.image_url = `${env.apiBaseUrl}/products/images/${product_image.image_url}`;
             });
           }
-          console.log('Detail product:', response);
           this.product = response;
           this.showImage(0);
         },
@@ -76,9 +75,11 @@ export class DetailProductComponent implements OnInit {
   previousImage(): void {
     this.showImage(this.currentImageIndex - 1);
   }
+
   addToCart(): void {
     if (this.product) {
       this.cartService.addToCart(this.product.id, this.quantity);
+      console.log('Added to cart:', this.quantity);
     } else {
       console.error('Cannot add to cart: product is null');
     }

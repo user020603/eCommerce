@@ -24,14 +24,12 @@ import thanhnt.ec.ecsb.response.ProductResponse;
 import thanhnt.ec.ecsb.services.IProductService;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -166,6 +164,17 @@ public class ProductController {
     public ProductResponse getProductById(@PathVariable("id") Long productId) throws Exception {
         Product existingProduct = productService.getProductById(productId);
         return ProductResponse.fromProduct(existingProduct);
+    }
+
+    @GetMapping("/by-ids")
+    public ResponseEntity<?> getProductsById(@RequestParam("ids") String ids) {
+        try {
+            List<Long> productIds = Arrays.stream(ids.split(",")).map(Long::parseLong).toList();
+            List<Product> products = productService.findProductsByIds(productIds);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

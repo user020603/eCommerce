@@ -29,7 +29,6 @@ export class ProductService {
     return this.http.get(`${env.apiBaseUrl}/products/${productId}`);
   }
   getProductsByIds(productIds: number[]): Observable<Product[]> {
-    debugger;
     const params = new HttpParams().set('ids', productIds.join(','));
     return this.http.get<Product[]>(`${this.apiGetProducts}/by-ids`, {
       params,
