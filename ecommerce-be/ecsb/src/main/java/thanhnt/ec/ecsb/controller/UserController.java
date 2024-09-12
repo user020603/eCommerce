@@ -6,13 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import thanhnt.ec.ecsb.dto.*;
 import thanhnt.ec.ecsb.model.User;
 import thanhnt.ec.ecsb.response.LoginResponse;
+import thanhnt.ec.ecsb.response.UserResponse;
 import thanhnt.ec.ecsb.services.IUserService;
 
 import java.util.List;
@@ -58,6 +56,17 @@ public class UserController {
             return ResponseEntity.badRequest().body(
                     LoginResponse.builder().message(e.getMessage()).build()
             );
+        }
+    }
+
+    @PostMapping("/details")
+    public ResponseEntity<UserResponse> getUserDetails(@RequestHeader("Authorization") String token) {
+        try {
+            String extractedToken = token.substring(7);
+            User user = userService.getUserDetailsFromToken(extractedToken);
+            return ResponseEntity.ok(UserResponse.fromUser(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }
