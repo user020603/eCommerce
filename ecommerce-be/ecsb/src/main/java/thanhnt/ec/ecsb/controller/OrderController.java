@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import thanhnt.ec.ecsb.dto.OrderDTO;
 import thanhnt.ec.ecsb.model.Order;
+import thanhnt.ec.ecsb.response.OrderResponse;
 import thanhnt.ec.ecsb.services.IOrderService;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class OrderController {
     public ResponseEntity<?> getOrder(@Valid @PathVariable("id") Long orderId) {
         try {
             Order detailOrder = orderService.getOrder(orderId);
-            return ResponseEntity.ok(detailOrder);
+            return ResponseEntity.ok(OrderResponse.fromOrder(detailOrder));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

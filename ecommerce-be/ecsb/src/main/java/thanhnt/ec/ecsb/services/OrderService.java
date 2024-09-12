@@ -4,15 +4,17 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import thanhnt.ec.ecsb.dto.CartItemDTO;
 import thanhnt.ec.ecsb.dto.OrderDTO;
 import thanhnt.ec.ecsb.exceptions.DataNotFoundException;
-import thanhnt.ec.ecsb.model.Order;
-import thanhnt.ec.ecsb.model.OrderStatus;
-import thanhnt.ec.ecsb.model.User;
+import thanhnt.ec.ecsb.model.*;
+import thanhnt.ec.ecsb.repositories.OrderDetailRepository;
 import thanhnt.ec.ecsb.repositories.OrderRepository;
+import thanhnt.ec.ecsb.repositories.ProductRepository;
 import thanhnt.ec.ecsb.repositories.UserRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +24,8 @@ import java.util.Locale;
 public class OrderService implements IOrderService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
+    private final OrderDetailRepository orderDetailRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -48,9 +52,34 @@ public class OrderService implements IOrderService {
         // check shipping date greater than today
         LocalDate shippingDate = orderDTO.getShippingDate() == null
                 ? LocalDate.now() : orderDTO.getShippingDate();
+        if (shippingDate.isBefore(LocalDate.now())) {
+            throw new DataNotFoundException("Date must be at least today !");
+        }
         order.setActive(true);
         order.setShippingDate(shippingDate);
-        return orderRepository.save(order);
+        order.setTotalPrice(orderDTO.getTotalPrice());
+        orderRepository.save(order);
+
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        for (CartItemDTO cartItemDTO : orderDTO.getCartItems()) {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrder(order);
+
+            Long productId = cartItemDTO.getProductId();
+            int quantity = cartItemDTO.getQuantity();
+
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new DataNotFoundException("Product not found with id: " + productId));
+
+            orderDetail.setProduct(product);
+            orderDetail.setNumberOfProducts(quantity);
+            orderDetail.setPrice(product.getPrice());
+
+            orderDetails.add(orderDetail);
+        }
+
+        orderDetailRepository.saveAll(orderDetails);
+        return order;
     }
 
     @Override
