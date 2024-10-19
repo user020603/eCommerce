@@ -1,15 +1,30 @@
 CREATE DATABASE shopapp;
 USE shopapp; 
 
--- When user want to buy products => have to regist an account => user table
-ALTER TABLE users AUTO_INCREMENT = 1;
-
 -- Role of user
 CREATE TABLE roles(
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL
 );
 
+-- When user want to buy products => have to regist an account => user table
+CREATE TABLE users(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(100) DEFAULT "",
+    phone_number VARCHAR(100) NOT NULL,
+    address VARCHAR(200) DEFAULT "",
+    password VARCHAR(100) NOT NULL DEFAULT "", -- encrypted password
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,  
+    is_active TINYINT(1) DEFAULT 1,
+    date_of_birth DATE,
+    facebook_account_id INT DEFAULT 0,
+    google_account_id INT DEFAULT 0,
+    role_id INT,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+ALTER TABLE users AUTO_INCREMENT = 1;
 
 CREATE TABLE tokens(
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -22,7 +37,7 @@ CREATE TABLE tokens(
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- support login with facebook or google
+-- Support login with Facebook or Google
 CREATE TABLE social_accounts(
     id INT PRIMARY KEY AUTO_INCREMENT,
     provider VARCHAR(20) NOT NULL COMMENT 'facebook or google',
@@ -36,7 +51,7 @@ CREATE TABLE social_accounts(
 -- Category of products 
 CREATE TABLE categories(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL DEFAULT "" COMMENT 'name of category'
+    name VARCHAR(100) NOT NULL DEFAULT '' COMMENT 'name of category'
 );
 
 -- Products
@@ -55,17 +70,15 @@ CREATE TABLE products(
 CREATE TABLE product_images(
     id INT PRIMARY KEY AUTO_INCREMENT,
     product_id INT,
-    FOREIGN KEY (product_id) REFERENCES products(id),
+    image_url VARCHAR(300) NOT NULL,
     CONSTRAINT fk_product_images_product_id 
-        FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
-    image_url VARCHAR(300) NOT NULL
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 ); 
 
--- Order
+-- Orders
 CREATE TABLE orders(
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(id),
     full_name VARCHAR(100) NOT NULL DEFAULT '',
     email VARCHAR(100) NOT NULL DEFAULT '',
     phone_number VARCHAR(20) NOT NULL DEFAULT '',
@@ -79,18 +92,19 @@ CREATE TABLE orders(
     shipping_date DATE,
     tracking_number VARCHAR(50),
     payment_method VARCHAR(100),
-    active TINYINT(1)
+    active TINYINT(1),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- Order detail
+-- Order details
 CREATE TABLE order_details(
     id INT PRIMARY KEY AUTO_INCREMENT,
     order_id INT,
-    FOREIGN KEY (order_id) REFERENCES orders(id),
     product_id INT,
-    FOREIGN KEY (product_id) REFERENCES products(id),
     price FLOAT CHECK (price >= 0),
     number_of_products INT CHECK (number_of_products > 0),
     total_money FLOAT CHECK (total_money >= 0),
-    color VARCHAR(20) DEFAULT ''
+    color VARCHAR(20) DEFAULT '',
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
 );

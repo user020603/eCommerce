@@ -46,3 +46,6 @@ networks:
 
 # view logs
 # docker-compose -f deployment.yml logs -f shopapp-spring
+
+# exec db
+# docker exec -it mysql8-container mysql -u root -p
