@@ -22,7 +22,7 @@ services:
 
   db:
     container_name: mysql8-container
-    image: mysql:8.1.0    
+    image: mysql:latest  
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -36,3 +36,13 @@ services:
       
 networks:
   shopapp-network:
+
+#docker-compose -f deployment.yml build app
+#docker-compose -f ./deployment.yml down
+#docker-compose -f ./deployment.yml up -d db
+#docker-compose -f ./deployment.yml up -d shopapp-spring
+#test container 
+#docker run -it --name openjdk-container maven:3.8.4-openjdk-17-slim
+
+# view logs
+# docker-compose -f deployment.yml logs -f shopapp-spring
