@@ -91,3 +91,10 @@ public class UserController {
         }
     }
 }
+
+// docker run --name shopapp-mysql \
+//        -e MYSQL_ROOT_PASSWORD=password \
+//        -e MYSQL_PASSWORD=password \
+//        -p 3307:3306 \
+//        -d mysql:latest
+

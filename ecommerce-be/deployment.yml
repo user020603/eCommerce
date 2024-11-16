@@ -1,51 +1,60 @@
 version: '3.7'
 services:
-  shopapp-spring:    
+  shopapp-spring-container:
     container_name: shopapp-spring-container    
     build:
       context: ./ecsb
-      dockerfile: ../Dockerfile      
+      dockerfile: DockerfileJavaSpring
     ports:
-      - 8088:8088
+      - "8099:8088"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/shopapp?serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
-      SPRING_JPA_HIBERNATE_DDL_AUTO: none
-      SPRING_JPA_SHOW_SQL: "true"
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql8-container:3306/ShopApp?serverTimezone=UTC&allowPublicKeyRetrieval=true
+      MYSQL_ROOT_PASSWORD: password
+      REDIS_HOST: redis-container
+      REDIS_PORT: 6379
     depends_on:
-      - db
+      - mysql8-container
     networks:
       - shopapp-network
 
-  db:
+  mysql8-container:
     container_name: mysql8-container
     image: mysql:latest  
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: shopapp
+      MYSQL_DATABASE: ShopApp
     ports:
-      - 3307:3306
+      - "3306:3306"
     volumes: 
       - ./database.sql:/docker-entrypoint-initdb.d/init-script.sql
     networks:
       - shopapp-network
+
+  redis-container:
+    image: redis:latest
+    container_name: redis-container
+    restart: always
+    ports:
+        - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    networks:
+        - shopapp-network
       
 networks:
   shopapp-network:
+    name: shopapp-network
+    driver: bridge
 
-#docker-compose -f deployment.yml build app
 #docker-compose -f ./deployment.yml down
-#docker-compose -f ./deployment.yml up -d db
-#docker-compose -f ./deployment.yml up -d shopapp-spring
-#test container 
-#docker run -it --name openjdk-container maven:3.8.4-openjdk-17-slim
 
-# view logs
-# docker-compose -f deployment.yml logs -f shopapp-spring
+#docker-compose -f ./deployment.yml rm -s -f mysql8-container
+#docker-compose -f ./deployment.yml up -d mysql8-container
 
-# exec db
-# docker exec -it mysql8-container mysql -u root -p
+#docker-compose -f ./deployment.yml rm -s -f shopapp-spring-container
+#docker-compose -f ./deployment.yml up -d shopapp-spring-container
+#docker logs shopapp-spring-container
+
+#docker-compose -f ./deployment.yml rm -s -f redis-container
+#docker-compose -f ./deployment.yml up -d redis-container

@@ -1,5 +1,6 @@
 package thanhnt.ec.ecsb.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.javafaker.Faker;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import thanhnt.ec.ecsb.model.Product;
 import thanhnt.ec.ecsb.model.ProductImage;
 import thanhnt.ec.ecsb.response.ProductListResponse;
 import thanhnt.ec.ecsb.response.ProductResponse;
+import thanhnt.ec.ecsb.services.IProductRedisService;
 import thanhnt.ec.ecsb.services.IProductService;
 
 import java.io.IOException;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductController {
     private final IProductService productService;
+    private final IProductRedisService productRedisService;
 
     @PostMapping(value = "")
     public ResponseEntity<?> createProduct(
@@ -141,21 +144,27 @@ public class ProductController {
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0", name = "category_id") Long categoryId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int limit) {
-
+            @RequestParam(defaultValue = "6") int limit) throws JsonProcessingException {
+        int totalPages = 0;
         PageRequest pageRequest = PageRequest.of(
                 page - 1, limit,
 //                Sort.by("createdAt").descending());
                 Sort.by("id").ascending()
         );
 
-        Page<ProductResponse> productPage = productService.getAllProducts(keyword, categoryId, pageRequest);
-        int totalPage = productPage.getTotalPages();
-        List<ProductResponse> products = productPage.getContent();
+        List<ProductResponse> productResponses = productRedisService.getAllProducts(keyword, categoryId, pageRequest);
+        if (productResponses == null) {
+            Page<ProductResponse> productPage = productService.getAllProducts(keyword, categoryId, pageRequest);
+            totalPages = productPage.getTotalPages();
+            productResponses = productPage.getContent();
+            productRedisService.saveAllProducts(productResponses, keyword, categoryId, pageRequest);
+        } else {
+            System.out.println("\n########\n" + "Fetch from Redis" + "\n#######\n");
+        }
         return ResponseEntity.ok(ProductListResponse.
                 builder().
-                products(products).
-                totalPages(totalPage).
+                products(productResponses).
+                totalPages(totalPages).
                 build());
     }
 
