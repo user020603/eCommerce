@@ -34,3 +34,13 @@ api:
 jwt:
   expiration: 2592000 # 30 days = 30 * 24 * 60 * 60
   secretKey: TgRB1C2JHBZzC7zebA9uSXR3kYoQXUo0yMYINMAHDxI=
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /api/v1/actuator
+      exposure:
+        include: "health, info"

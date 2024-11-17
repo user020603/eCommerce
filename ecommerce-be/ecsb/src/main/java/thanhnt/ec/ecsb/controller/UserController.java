@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -61,6 +62,7 @@ public class UserController {
     }
 
     @PostMapping("/details")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<UserResponse> getUserDetails(@RequestHeader("Authorization") String token) {
         try {
             String extractedToken = token.substring(7);
@@ -72,6 +74,7 @@ public class UserController {
     }
 
     @PutMapping("/details/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<UserResponse> updateUserDetails(
             @PathVariable Long userId,
             @RequestBody UpdateUserDTO updatedUserDTO,
@@ -91,10 +94,4 @@ public class UserController {
         }
     }
 }
-
-// docker run --name shopapp-mysql \
-//        -e MYSQL_ROOT_PASSWORD=password \
-//        -e MYSQL_PASSWORD=password \
-//        -p 3307:3306 \
-//        -d mysql:latest
 

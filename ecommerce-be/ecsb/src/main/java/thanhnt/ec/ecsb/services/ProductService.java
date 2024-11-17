@@ -70,7 +70,7 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional
-    public void updateProduct(Long id, ProductDTO productDTO) throws Exception {
+    public Product updateProduct(Long id, ProductDTO productDTO) throws Exception {
         Product existingProduct = getProductById(id);
         if (existingProduct != null) {
             Category existingCategory = categoryRepository.
@@ -86,6 +86,7 @@ public class ProductService implements IProductService {
             existingProduct.setThumbnail(productDTO.getThumbnail());
             productRepository.save(existingProduct);
         }
+        return existingProduct;
     }
 
     @Override
