@@ -2,6 +2,7 @@ package thanhnt.ec.ecsb.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -9,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import thanhnt.ec.ecsb.dto.CategoryDTO;
 import thanhnt.ec.ecsb.model.Category;
+import thanhnt.ec.ecsb.response.ResponseObject;
 import thanhnt.ec.ecsb.services.ICategoryService;
 
 import java.util.List;
@@ -33,29 +35,44 @@ public class CategoryController {
                     .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errorMessages);
         }
-        categoryService.createCategory(categoryDTO);
-        return ResponseEntity.ok("Create category successfully");
+        Category category = categoryService.createCategory(categoryDTO);
+        return ResponseEntity.ok(category);
     }
 
     @GetMapping("") // http://localhost:8088/api/v1/categories?page=1&limit=10
-    public ResponseEntity<List<Category>> getAllCategories(
+    public ResponseEntity<ResponseObject> getAllCategories(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit) {
         List<Category> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get list of categories successfully")
+                .status(HttpStatus.OK)
+                .data(categories)
+                .build());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<ResponseObject> updateCategory(
+            @PathVariable Long id,
+            @Valid @RequestBody CategoryDTO categoryDTO
+    ) {
         categoryService.updateCategory(id, categoryDTO);
-        return ResponseEntity.ok("Update category successfully");
+        return ResponseEntity.ok(ResponseObject
+                .builder()
+                .data(categoryService.getCategoryById(id))
+                .message("Update Category Successfully")
+                .build());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<ResponseObject> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.ok("deleted " + id);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .message("Delete category successfully")
+                        .build());
     }
 }

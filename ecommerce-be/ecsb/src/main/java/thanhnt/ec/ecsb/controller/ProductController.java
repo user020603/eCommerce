@@ -23,6 +23,7 @@ import thanhnt.ec.ecsb.model.Product;
 import thanhnt.ec.ecsb.model.ProductImage;
 import thanhnt.ec.ecsb.response.ProductListResponse;
 import thanhnt.ec.ecsb.response.ProductResponse;
+import thanhnt.ec.ecsb.response.ResponseObject;
 import thanhnt.ec.ecsb.services.IProductRedisService;
 import thanhnt.ec.ecsb.services.IProductService;
 
@@ -43,59 +44,82 @@ public class ProductController {
 
     @PostMapping(value = "")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createProduct(
-            @RequestBody @Valid ProductDTO productDTO,
+    public ResponseEntity<ResponseObject> createProduct(
+            @Valid @RequestBody ProductDTO productDTO,
             BindingResult result
     ) throws Exception {
-        if (result.hasErrors()) {
-            List<String> errorMessages = result.getFieldErrors().stream()
+        if(result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors()
+                    .stream()
                     .map(FieldError::getDefaultMessage)
-                    .collect(Collectors.toList());
-            return ResponseEntity.badRequest().body(errorMessages);
+                    .toList();
+            return ResponseEntity.badRequest().body(
+                    ResponseObject.builder()
+                            .message(String.join("; ", errorMessages))
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
         }
-
-        try {
-            Product newProduct = productService.createProduct(productDTO);
-            return ResponseEntity.ok(newProduct);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to store file");
-        }
+        Product newProduct = productService.createProduct(productDTO);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Create new product successfully")
+                        .status(HttpStatus.CREATED)
+                        .data(newProduct)
+                        .build());
     }
 
     @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     private ResponseEntity<?> uploadImages(
             @PathVariable("id") Long productId,
-            @ModelAttribute("files") List<MultipartFile> files)
-    {
-        try {
-            Product existingProduct = productService.getProductById(productId);
-            files = files == null ? new ArrayList<MultipartFile>() : files;
-            if (files.size() > ProductImage.MAXIMUM_IMG_UPLOAD) {
-                return ResponseEntity.badRequest().body("You can only upload maximum 5 images");
-            }
-            List<ProductImage> productImages = new ArrayList<>();
-            for (MultipartFile file : files) {
-                if (file.getSize() == 0) {
-                    continue;
-                }
-                // Check image file
-                if (file.getSize() > 10 * 1024 * 1024) {
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("File is too large! Maximum size is 10MB");
-                }
-                String filename = storeFile(file);
-                ProductImage productImage = productService.createProductImage(
-                        existingProduct.getId(),
-                        ProductImageDTO.builder()
-                                .imageUrl(filename)
-                                .build()
-                );
-                productImages.add(productImage);
-            }
-            return ResponseEntity.ok().body(productImages);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            @ModelAttribute("files") List<MultipartFile> files) throws Exception {
+        Product existingProduct = productService.getProductById(productId);
+        files = files == null ? new ArrayList<MultipartFile>() : files;
+        if (files.size() > ProductImage.MAXIMUM_IMG_UPLOAD) {
+            return ResponseEntity.badRequest().body(
+                    ResponseObject.builder()
+                            .message("Upload maximum 5 images per product")
+                            .build()
+            );
         }
+        List<ProductImage> productImages = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (file.getSize() == 0) {
+                continue;
+            }
+            // Check image file
+            if (file.getSize() > 10 * 1024 * 1024) {
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                        .body(ResponseObject.builder()
+                                .message("File is too large, maximum is 10MB")
+                                .status(HttpStatus.PAYLOAD_TOO_LARGE)
+                                .build());
+            }
+
+            String contentType = file.getContentType();
+            if(contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                        .body(ResponseObject.builder()
+                                .message("File must be image")
+                                .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                                .build());
+            }
+
+            String filename = storeFile(file);
+            ProductImage productImage = productService.createProductImage(
+                    existingProduct.getId(),
+                    ProductImageDTO.builder()
+                            .imageUrl(filename)
+                            .build()
+            );
+            productImages.add(productImage);
+        }
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Upload image successfully")
+                .status(HttpStatus.CREATED)
+                .data(productImages)
+                .build());
     }
 
     private String storeFile(MultipartFile file) throws IOException {
@@ -172,58 +196,79 @@ public class ProductController {
 
     // http://localhost:8088/api/v1/products/6
     @GetMapping("/{id}")
-    public ProductResponse getProductById(@PathVariable("id") Long productId) throws Exception {
+    public ResponseEntity<ResponseObject> getProductById(
+            @PathVariable("id") Long productId
+    ) throws Exception {
         Product existingProduct = productService.getProductById(productId);
-        return ProductResponse.fromProduct(existingProduct);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(ProductResponse.fromProduct(existingProduct))
+                .message("Get detail product successfully")
+                .status(HttpStatus.OK)
+                .build());
     }
 
     @GetMapping("/by-ids")
-    public ResponseEntity<?> getProductsById(@RequestParam("ids") String ids) {
-        try {
-            List<Long> productIds = Arrays.stream(ids.split(",")).map(Long::parseLong).toList();
-            List<Product> products = productService.findProductsByIds(productIds);
-            return ResponseEntity.ok(products);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseObject> getProductsByIds(@RequestParam("ids") String ids) {
+        //eg: 1,3,5,7
+        // Tách chuỗi ids thành một mảng các số nguyên
+        List<Long> productIds = Arrays.stream(ids.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+        List<Product> products = productService.findProductsByIds(productIds);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(products)
+                .message("Get products successfully")
+                .status(HttpStatus.OK)
+                .build()
+        );
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void deleteProduct(@PathVariable("id") Long productId) throws Exception {
-        productService.deleteProduct(productId);
+    public ResponseEntity<ResponseObject> deleteProduct(@PathVariable long id) throws Exception {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(null)
+                .message(String.format("Product with id = %d deleted successfully", id))
+                .status(HttpStatus.OK)
+                .build());
     }
 
 //    @PostMapping("/fakeProducts")
-    private ResponseEntity<?> generateFakeProducts() throws Exception {
+    private ResponseEntity<ResponseObject> generateFakeProducts() throws Exception {
         Faker faker = new Faker();
-        for (int i = 1; i <= 1_000; i++) {
-            String name = faker.commerce().productName();
-            if (productService.existsByName(name)) {
+        for (int i = 0; i < 1_000_000; i++) {
+            String productName = faker.commerce().productName();
+            if(productService.existsByName(productName)) {
                 continue;
             }
             ProductDTO productDTO = ProductDTO.builder()
-                    .name(name)
-                    .price((float) faker.number().numberBetween(10, 90_000_000))
+                    .name(productName)
+                    .price((float)faker.number().numberBetween(10, 90_000_000))
                     .description(faker.lorem().sentence())
                     .thumbnail("")
-                    .categoryId((long) faker.number().numberBetween(1, 4))
+                    .categoryId((long)faker.number().numberBetween(2, 5))
                     .build();
             productService.createProduct(productDTO);
         }
-        return ResponseEntity.ok("Fake products created successfully");
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Insert fake products successfully")
+                .data(null)
+                .status(HttpStatus.OK)
+                .build());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateProduct(
+    //@SecurityRequirement(name="bearer-key")
+    public ResponseEntity<ResponseObject> updateProduct(
             @PathVariable long id,
-            @RequestBody ProductDTO productDTO) {
-        try {
-            Product updatedProduct = productService.updateProduct(id, productDTO);
-            return ResponseEntity.ok(updatedProduct);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+            @RequestBody ProductDTO productDTO) throws Exception {
+        Product updatedProduct = productService.updateProduct(id, productDTO);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(updatedProduct)
+                .message("Update product successfully")
+                .status(HttpStatus.OK)
+                .build());
     }
 }

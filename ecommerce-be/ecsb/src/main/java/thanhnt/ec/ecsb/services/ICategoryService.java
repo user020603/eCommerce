@@ -6,7 +6,7 @@ import thanhnt.ec.ecsb.model.Category;
 import java.util.List;
 
 public interface ICategoryService {
-    void createCategory(CategoryDTO category);
+    Category createCategory(CategoryDTO category);
     Category getCategoryById(Long id);
     List<Category> getAllCategories();
     void updateCategory(Long categoryId, CategoryDTO category);

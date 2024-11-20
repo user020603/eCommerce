@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 @Aspect
 @Component
 public class PerformanceAspect {
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
     private String getMethodName(JoinPoint joinPoint) {
         return joinPoint.getSignature().getName();
@@ -20,7 +20,7 @@ public class PerformanceAspect {
     //@Pointcut("within(thanhnt.ec.ecsb.controller.*)")
     //@Pointcut("within(thanhnt.ec.ecsb.controller.CategoryController)")
     @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
-    public void  controllerMethods() {};
+    public void controllerMethods() {};
 
     @Before("controllerMethods()")
     public void beforeMethodExecution(JoinPoint joinPoint) {
