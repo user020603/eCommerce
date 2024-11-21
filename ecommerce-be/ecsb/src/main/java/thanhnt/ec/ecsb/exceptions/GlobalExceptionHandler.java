@@ -27,5 +27,4 @@ public class GlobalExceptionHandler {
                 .message(exception.getMessage())
                 .build());
     }
-
 }
